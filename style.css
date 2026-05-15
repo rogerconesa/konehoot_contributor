@@ -65,18 +65,22 @@ body::after {
   text-align: center;
 }
 
-.badge {
+.konehoot-logo {
   display: inline-block;
   font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--bg);
-  background: var(--accent);
-  padding: 5px 14px;
-  border-radius: 100px;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   margin-bottom: 20px;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(255,255,255,0.2);
+}
+
+.konehoot-logo span {
+  color: var(--accent);
+  background: var(--bg);
+  padding: 0 6px;
+  border-radius: 6px;
 }
 
 .header h1 {
@@ -148,6 +152,26 @@ input[type="text"], textarea {
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   -webkit-appearance: none;
+}
+
+select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 13px 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232,245,58,0.1);
 }
 
 input[type="text"]:focus, textarea:focus {

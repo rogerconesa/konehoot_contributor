@@ -3,18 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Konehoot · Envia la teva pregunta</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
 <script type="module" src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
 </head>
 <body>
 <div class="container">
 
   <!-- Header -->
   <div class="header">
-    <div class="badge">Konehoot</div>
+    <div class="konehoot-logo">Kone<span>hoot</span></div>
     <h1>Envia la teva<br><span>pregunta per al joc</span></h1>
     <p>Proposa una pregunta sobre tu mateix. L'administrador la revisarà abans d'entrar al joc.</p>
   </div>
@@ -33,6 +42,13 @@
           </div>
           <label for="autor">El teu nom</label>
           <input type="text" id="autor" placeholder="Com et diem al grup?" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label for="joc-select">Joc</label>
+          <select id="joc-select" required>
+            <option value="">Carregant jocs...</option>
+          </select>
         </div>
 
         <div class="field">

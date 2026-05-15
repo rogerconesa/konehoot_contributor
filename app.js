@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDuHxOAU3hiL-8uUYuFyzP-mTyUCTR-wmw",
@@ -12,6 +12,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
+  let jocsDisponibles = [];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
   const LS_KEY = 'konehoot_noms';
@@ -70,6 +71,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   // Init: carrega noms desats
   document.addEventListener('DOMContentLoaded', () => {
     renderSelectorNoms();
+    carregarJocs();
     // Si hi ha un sol nom desat, omple'l automàticament
     const noms = getNoms();
     if (noms.length === 1) {
@@ -79,9 +81,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   });
   // ─────────────────────────────────────────────────────────────────────
 
+  function carregarJocs() {
+    const select = document.getElementById('joc-select');
+    onSnapshot(query(collection(db, 'jocs'), where('actiu', '==', true)), snap => {
+      jocsDisponibles = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => String(a.nom || '').localeCompare(String(b.nom || ''), 'ca'));
+      select.innerHTML = '<option value="">Selecciona un joc</option>' +
+        jocsDisponibles.map(j => `<option value="${j.id}">${esc(j.nom || j.id)}</option>`).join('');
+    }, () => {
+      select.innerHTML = '<option value="">No s\'han pogut carregar els jocs</option>';
+    });
+  }
+
   window.enviarPregunta = async function() {
     const autor    = document.getElementById('autor').value.trim();
     const pregunta = document.getElementById('pregunta').value.trim();
+    const jocId = document.getElementById('joc-select').value;
     const respostes = [
       document.getElementById('r1').value.trim(),
       document.getElementById('r2').value.trim(),
@@ -90,7 +105,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     ];
     const correcta = document.querySelector('input[name="correcta"]:checked')?.value;
 
-    if (!autor || !pregunta || respostes.some(r => !r) || correcta === undefined) {
+    const joc = jocsDisponibles.find(j => j.id === jocId);
+
+    if (!autor || !pregunta || !jocId || respostes.some(r => !r) || correcta === undefined) {
       mostrarError('Omple tots els camps i marca la resposta correcta.');
       return;
     }
@@ -102,6 +119,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     try {
       await addDoc(collection(db, 'preguntes_pendents'), {
         autor,
+        jocId,
+        jocNom: joc?.nom || jocId,
         pregunta,
         respostes,
         correcta: parseInt(correcta),
@@ -128,6 +147,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('btn-enviar').disabled = false;
     document.getElementById('btn-enviar').textContent = 'Enviar pregunta →';
     document.getElementById('error-msg').style.display = 'none';
+    document.getElementById('joc-select').value = '';
     renderSelectorNoms();
   };
 
@@ -143,4 +163,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('success-nom').textContent = autor;
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('success-area').style.display = 'flex';
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
