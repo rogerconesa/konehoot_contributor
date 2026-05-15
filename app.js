@@ -14,6 +14,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   const db  = getFirestore(app);
   let jocsDisponibles = [];
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
+  const MISSATGES_EXTRA = [
+    "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
+    "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS."
+  ];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
   const LS_KEY = 'konehoot_noms';
@@ -204,6 +208,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 
   function mostrarSuccess(autor) {
     document.getElementById('success-nom').textContent = autor;
+    const extraMsgEl = document.getElementById('success-extra-msg');
+    if (extraMsgEl) {
+      const idx = Math.floor(Math.random() * MISSATGES_EXTRA.length);
+      extraMsgEl.textContent = MISSATGES_EXTRA[idx];
+    }
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('success-area').style.display = 'flex';
   }
