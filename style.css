@@ -155,6 +155,19 @@ body::after {
   z-index: 20;
 }
 
+@media (max-width: 600px) {
+  .header-subline {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .info-popover-card {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
 body.theme-finde {
   --bg: #291f14;
   --surface: #3a2b1b;

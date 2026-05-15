@@ -73,6 +73,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     renderSelectorNoms();
     carregarJocs();
     document.getElementById('joc-select').addEventListener('change', actualitzarTemaPerJoc);
+    document.addEventListener('click', (event) => {
+      const pop = document.querySelector('.info-popover');
+      if (!pop || !pop.open) return;
+      if (!pop.contains(event.target)) pop.removeAttribute('open');
+    });
     // Si hi ha un sol nom desat, omple'l automàticament
     const noms = getNoms();
     if (noms.length === 1) {
