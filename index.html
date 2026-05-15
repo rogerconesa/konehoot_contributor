@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konehoot · Envia la teva pregunta</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Konehoot</div>
+    <h1>Envia la teva<br><span>pregunta per al joc</span></h1>
+    <p>Proposa una pregunta sobre tu mateix. L'administrador la revisarà abans d'entrar al joc.</p>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Form -->
+    <div id="form-area">
+      <form id="form" onsubmit="event.preventDefault(); enviarPregunta();">
+
+        <div class="field">
+          <div id="selector-noms">
+            <span class="selector-label">Hola de nou! Ets tu?</span>
+            <div id="noms-llista"></div>
+          </div>
+          <label for="autor">El teu nom</label>
+          <input type="text" id="autor" placeholder="Com et diem al grup?" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label for="pregunta">La pregunta</label>
+          <textarea id="pregunta" placeholder="Ex: Quin és el meu hobby secret que ningú sap?" required></textarea>
+        </div>
+
+        <hr class="divider">
+
+        <div class="field">
+          <label>Les 4 respostes</label>
+          <div class="respostes-grid">
+
+            <div class="resposta-row">
+              <span class="resposta-color-dot"></span>
+              <input type="text" id="r1" placeholder="Resposta A" required>
+              <div class="radio-correcta">
+                <input type="radio" name="correcta" value="0" title="Marca com a correcta">
+              </div>
+            </div>
+
+            <div class="resposta-row">
+              <span class="resposta-color-dot"></span>
+              <input type="text" id="r2" placeholder="Resposta B" required>
+              <div class="radio-correcta">
+                <input type="radio" name="correcta" value="1" title="Marca com a correcta">
+              </div>
+            </div>
+
+            <div class="resposta-row">
+              <span class="resposta-color-dot"></span>
+              <input type="text" id="r3" placeholder="Resposta C" required>
+              <div class="radio-correcta">
+                <input type="radio" name="correcta" value="2" title="Marca com a correcta">
+              </div>
+            </div>
+
+            <div class="resposta-row">
+              <span class="resposta-color-dot"></span>
+              <input type="text" id="r4" placeholder="Resposta D" required>
+              <div class="radio-correcta">
+                <input type="radio" name="correcta" value="3" title="Marca com a correcta">
+              </div>
+            </div>
+
+          </div>
+          <p class="radio-hint">Selecciona el cercle de la resposta correcta</p>
+        </div>
+
+        <hr class="divider">
+
+        <div id="error-msg"></div>
+        <button type="submit" id="btn-enviar">Enviar pregunta →</button>
+
+      </form>
+    </div>
+
+    <!-- Success -->
+    <div id="success-area">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Pregunta enviada!</div>
+      <p class="success-text">Gràcies, <strong id="success-nom"></strong>! La teva pregunta ja és a mans de l'admin. Si la valida, apareixerà al joc. 🎉</p>
+      <button id="btn-nova" onclick="novaContribucio()">Enviar una altra pregunta</button>
+    </div>
+
+  </div>
+
+  <p class="footer">Les respostes són confidencials fins al dia del joc.</p>
+
+</div>
+</body>
+</html>
