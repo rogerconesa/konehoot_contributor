@@ -1,13 +1,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #0d0d0d;
-  --surface:  #161616;
-  --border:   #2a2a2a;
+  --bg:       #1b1f2a;
+  --surface:  #2a3042;
+  --border:   #3b455f;
   --accent:   #e8f53a;
   --accent2:  #3affa0;
-  --text:     #f0ede6;
-  --muted:    #6b6b6b;
+  --text:     #f8fbff;
+  --muted:    #b6c0d3;
   --danger:   #ff5c5c;
   --r1:       #e8f53a;
   --r2:       #3affa0;
@@ -45,11 +45,13 @@ body::before {
   width: 500px; height: 500px;
   background: var(--accent);
   top: -150px; left: -150px;
+  opacity: 0.12;
 }
 body::after {
   width: 400px; height: 400px;
   background: var(--r4);
   bottom: -100px; right: -100px;
+  opacity: 0.14;
 }
 
 .container {
@@ -66,7 +68,9 @@ body::after {
 }
 
 .konehoot-logo {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-display);
   font-size: 36px;
   font-weight: 800;
@@ -74,6 +78,11 @@ body::after {
   margin-bottom: 20px;
   color: #ffffff;
   text-shadow: 0 2px 12px rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.24);
+  border-radius: 14px;
+  padding: 8px 14px;
+  background: rgba(15,18,25,0.45);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
 
 .konehoot-logo span {
@@ -97,12 +106,33 @@ body::after {
 }
 
 .header p {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--muted);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.6;
   max-width: 380px;
   margin: 0 auto;
+}
+
+body.theme-finde {
+  --bg: #291f14;
+  --surface: #3a2b1b;
+  --border: #6e4f2f;
+  --accent: #ffd447;
+  --accent2: #ff7c4d;
+  --text: #fff9ef;
+  --muted: #ffd9b3;
+  background-image: radial-gradient(circle at 20% 10%, rgba(255,212,71,0.18), transparent 45%), radial-gradient(circle at 80% 20%, rgba(255,124,77,0.2), transparent 45%), radial-gradient(circle at 40% 85%, rgba(58,200,255,0.22), transparent 45%);
+}
+
+body.theme-finde .card::before {
+  height: 3px;
+  background: linear-gradient(90deg, #ffd447, #ff7c4d, #fa7dff, #3ac8ff);
+}
+
+body.theme-finde .konehoot-logo {
+  background: rgba(37, 20, 4, 0.55);
+  border-color: rgba(255, 212, 71, 0.6);
 }
 
 /* Card */

@@ -72,6 +72,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   document.addEventListener('DOMContentLoaded', () => {
     renderSelectorNoms();
     carregarJocs();
+    document.getElementById('joc-select').addEventListener('change', actualitzarTemaPerJoc);
     // Si hi ha un sol nom desat, omple'l automàticament
     const noms = getNoms();
     if (noms.length === 1) {
@@ -88,9 +89,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
         .sort((a, b) => String(a.nom || '').localeCompare(String(b.nom || ''), 'ca'));
       select.innerHTML = '<option value="">Selecciona un joc</option>' +
         jocsDisponibles.map(j => `<option value="${j.id}">${esc(j.nom || j.id)}</option>`).join('');
+      actualitzarTemaPerJoc();
     }, () => {
       select.innerHTML = '<option value="">No s\'han pogut carregar els jocs</option>';
     });
+  }
+
+  function actualitzarTemaPerJoc() {
+    const jocId = document.getElementById('joc-select').value;
+    const joc = jocsDisponibles.find(j => j.id === jocId);
+    const nom = String(joc?.nom || '').trim().toLowerCase();
+    document.body.classList.toggle('theme-finde', nom === 'finde rural 2026');
   }
 
   window.enviarPregunta = async function() {
@@ -148,6 +157,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('btn-enviar').textContent = 'Enviar pregunta →';
     document.getElementById('error-msg').style.display = 'none';
     document.getElementById('joc-select').value = '';
+    actualitzarTemaPerJoc();
     renderSelectorNoms();
   };
 
