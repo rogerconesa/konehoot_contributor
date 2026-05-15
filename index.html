@@ -33,12 +33,6 @@ if ('serviceWorker' in navigator) {
   <div class="header">
     <div class="konehoot-logo">kone<span>hoot</span></div>
     <h1>Envia preguntes per al joc.</h1>
-    <div class="header-subline">
-      <details class="info-popover">
-        <summary aria-label="Informacio">i</summary>
-        <div class="info-popover-card">Envia entre 2 i 3 preguntes per persona. Han de servir per descobrir els detalls mes escabrosos, delicats i intims de cadascu...</div>
-      </details>
-    </div>
   </div>
 
   <!-- Card -->
@@ -66,7 +60,7 @@ if ('serviceWorker' in navigator) {
 
         <div class="field">
           <label for="pregunta">La pregunta</label>
-          <textarea id="pregunta" placeholder="Ex: Quin és el meu hobby secret que ningú sap?" required></textarea>
+          <textarea id="pregunta" placeholder="Ex: Quin és el meu hobby secret que ningú sap?" required disabled></textarea>
         </div>
 
         <hr class="divider">
@@ -77,33 +71,33 @@ if ('serviceWorker' in navigator) {
 
             <div class="resposta-row">
               <span class="resposta-color-dot"></span>
-              <input type="text" id="r1" placeholder="Resposta A" required>
+              <input type="text" id="r1" placeholder="Resposta A" required disabled>
               <div class="radio-correcta">
-                <input type="radio" name="correcta" value="0" title="Marca com a correcta">
+                <input type="radio" name="correcta" value="0" title="Marca com a correcta" disabled>
               </div>
             </div>
 
             <div class="resposta-row">
               <span class="resposta-color-dot"></span>
-              <input type="text" id="r2" placeholder="Resposta B" required>
+              <input type="text" id="r2" placeholder="Resposta B" required disabled>
               <div class="radio-correcta">
-                <input type="radio" name="correcta" value="1" title="Marca com a correcta">
+                <input type="radio" name="correcta" value="1" title="Marca com a correcta" disabled>
               </div>
             </div>
 
             <div class="resposta-row">
               <span class="resposta-color-dot"></span>
-              <input type="text" id="r3" placeholder="Resposta C" required>
+              <input type="text" id="r3" placeholder="Resposta C" required disabled>
               <div class="radio-correcta">
-                <input type="radio" name="correcta" value="2" title="Marca com a correcta">
+                <input type="radio" name="correcta" value="2" title="Marca com a correcta" disabled>
               </div>
             </div>
 
             <div class="resposta-row">
               <span class="resposta-color-dot"></span>
-              <input type="text" id="r4" placeholder="Resposta D" required>
+              <input type="text" id="r4" placeholder="Resposta D" required disabled>
               <div class="radio-correcta">
-                <input type="radio" name="correcta" value="3" title="Marca com a correcta">
+                <input type="radio" name="correcta" value="3" title="Marca com a correcta" disabled>
               </div>
             </div>
 
@@ -114,7 +108,7 @@ if ('serviceWorker' in navigator) {
         <hr class="divider">
 
         <div id="error-msg"></div>
-        <button type="submit" id="btn-enviar">Enviar pregunta →</button>
+        <button type="submit" id="btn-enviar" disabled>Enviar pregunta →</button>
 
       </form>
     </div>
@@ -131,6 +125,18 @@ if ('serviceWorker' in navigator) {
 
   <p class="footer">Les respostes són confidencials fins al dia del joc.</p>
 
+</div>
+
+<div id="finde-modal" class="finde-modal" onclick="if(event.target===this) tancarFindeModal()">
+  <div class="finde-modal-card">
+    <h3>Finde Rural 2026</h3>
+    <p>Envia entre 2 i 3 preguntes. Han de servir per coneixer millor les teves interioritats i secrets mes escabrosos. No tinguis vergonya, estem en confiança: el que passa i es diu al Finde Rural, es queda al Finde Rural.</p>
+    <label class="finde-check">
+      <input type="checkbox" id="finde-no-more">
+      <span>No tornar a mostrar aquest missatge</span>
+    </label>
+    <button type="button" id="btn-finde-ok" onclick="tancarFindeModal()">Entesos</button>
+  </div>
 </div>
 </body>
 </html>

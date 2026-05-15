@@ -13,6 +13,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
   let jocsDisponibles = [];
+  const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
   const LS_KEY = 'konehoot_noms';
@@ -72,12 +73,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   document.addEventListener('DOMContentLoaded', () => {
     renderSelectorNoms();
     carregarJocs();
-    document.getElementById('joc-select').addEventListener('change', actualitzarTemaPerJoc);
-    document.addEventListener('click', (event) => {
-      const pop = document.querySelector('.info-popover');
-      if (!pop || !pop.open) return;
-      if (!pop.contains(event.target)) pop.removeAttribute('open');
-    });
+    document.getElementById('joc-select').addEventListener('change', onCanviJoc);
     // Si hi ha un sol nom desat, omple'l automàticament
     const noms = getNoms();
     if (noms.length === 1) {
@@ -87,6 +83,29 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   });
   // ─────────────────────────────────────────────────────────────────────
 
+  function onCanviJoc() {
+    actualitzarTemaPerJoc();
+    actualitzarBloqueigFormulari();
+    const jocId = document.getElementById('joc-select').value;
+    const joc = jocsDisponibles.find(j => j.id === jocId);
+    if (String(joc?.nom || '').trim().toLowerCase() === 'finde rural 2026') {
+      if (localStorage.getItem(LS_HIDE_FINDE_MODAL) === '1') return;
+      document.getElementById('finde-modal')?.classList.add('obert');
+    }
+  }
+
+  function actualitzarBloqueigFormulari() {
+    const jocId = document.getElementById('joc-select').value;
+    const actiu = !!jocId;
+    ['pregunta','r1','r2','r3','r4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = !actiu;
+    });
+    document.querySelectorAll('input[name="correcta"]').forEach(r => r.disabled = !actiu);
+    const btn = document.getElementById('btn-enviar');
+    if (btn) btn.disabled = !actiu;
+  }
+
   function carregarJocs() {
     const select = document.getElementById('joc-select');
     onSnapshot(query(collection(db, 'jocs'), where('actiu', '==', true)), snap => {
@@ -95,8 +114,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       select.innerHTML = '<option value="">Selecciona un joc</option>' +
         jocsDisponibles.map(j => `<option value="${j.id}">${esc(j.nom || j.id)}</option>`).join('');
       actualitzarTemaPerJoc();
+      actualitzarBloqueigFormulari();
     }, () => {
       select.innerHTML = '<option value="">No s\'han pogut carregar els jocs</option>';
+      actualitzarBloqueigFormulari();
     });
   }
 
@@ -163,7 +184,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('error-msg').style.display = 'none';
     document.getElementById('joc-select').value = '';
     actualitzarTemaPerJoc();
+    actualitzarBloqueigFormulari();
     renderSelectorNoms();
+  };
+
+  window.tancarFindeModal = function() {
+    const noMore = document.getElementById('finde-no-more');
+    if (noMore?.checked) localStorage.setItem(LS_HIDE_FINDE_MODAL, '1');
+    document.getElementById('finde-modal')?.classList.remove('obert');
   };
 
   function mostrarError(msg) {

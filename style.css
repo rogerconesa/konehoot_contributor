@@ -110,62 +110,80 @@ body::after {
   margin: 0 auto;
 }
 
-.header-subline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-}
-
-.info-popover {
-  position: relative;
-}
-
-.info-popover summary {
-  list-style: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.45);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 12px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.info-popover summary::-webkit-details-marker { display: none; }
-
-.info-popover-card {
-  position: absolute;
-  top: 30px;
-  right: 0;
-  width: min(280px, 76vw);
-  background: rgba(14,17,24,0.95);
-  border: 1px solid rgba(255,255,255,0.16);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 12px;
-  line-height: 1.45;
-  color: #f5f9ff;
-  text-align: left;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.25);
-  z-index: 20;
-}
 
 @media (max-width: 600px) {
-  .header-subline {
-    width: 100%;
-    justify-content: center;
-  }
+  .card { padding: 22px 16px; }
+}
 
-  .info-popover-card {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
+#btn-enviar:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.finde-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11,10,16,0.64);
+  z-index: 30;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.finde-modal.obert { display: flex; }
+
+.finde-modal-card {
+  width: min(520px, 92vw);
+  background: #251404;
+  color: #fff9ef;
+  border: 1px solid rgba(255,212,71,0.55);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.34);
+}
+
+.finde-modal-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #ffd447;
+}
+
+.finde-modal-card p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #fff3dc;
+}
+
+.finde-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #ffe6c5;
+}
+
+.finde-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+#btn-finde-ok {
+  margin-top: 14px;
+  background: #ffd447;
+  color: #251404;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
 }
 
 body.theme-finde {

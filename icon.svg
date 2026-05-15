@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#0d0d0d"/>
-  <text x="56" y="290" font-family="Syne, Arial, sans-serif" font-size="120" font-weight="800" fill="#ffffff">Kone</text>
-  <rect x="258" y="176" width="200" height="150" rx="16" fill="#000000"/>
-  <text x="276" y="290" font-family="Syne, Arial, sans-serif" font-size="120" font-weight="800" fill="#e8f53a">hoot</text>
+  <text x="38" y="292" font-family="Syne, Arial, sans-serif" font-size="96" font-weight="800" fill="#ffffff">kone</text>
+  <rect x="238" y="178" width="236" height="132" rx="14" fill="#000000"/>
+  <text x="252" y="292" font-family="Syne, Arial, sans-serif" font-size="96" font-weight="800" fill="#e8f53a">hoot</text>
 </svg>
