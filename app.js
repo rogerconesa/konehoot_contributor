@@ -37,6 +37,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     "Davant d'aquesta confessio, recomanem atenció psiquiàtrica urgent."
     "Detectada necessitat urgent de trucar al telèfon de l'esperança."
     "Un tractament a base de fentanil indica que és el més adequat per oblidar un fet tan traumàtic."
+    "No ens esperàvem això de tu: destí l'infern amb parada prèvia a la presó."
+    "Su Florentineza queda com un aprenent al teu costat."
   ];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
