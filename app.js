@@ -28,17 +28,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   let tempsRestant = 0;
   let haRespost = false;
   let jugadorDocIdActiu = '';
+  let jocActiu = null;
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
-    "Davant la gravetat de la informacio aportada, s'activa automàticament una notificació electrònica a @policia.",
-    "Alerta d'informació sensible rebuda: enviament automàtic a la comissió de drets humans del DMS.",
+    "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
+    "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS.",
     "Recomanem resar tres pares nostres durant les properes sis nits de lluna plena.",
-    "Una ment tan malalta requereix un procés immediat de lobotomització.",
-    "Davant d'aquesta confessio, recomanem atenció psiquiàtrica urgent.",
-    "Detectada necessitat urgent de trucar al telèfon de l'esperança.",
-    "Un tractament a base de fentanil indica que és el més adequat per oblidar un fet tan traumàtic.",
-    "No ens esperàvem això de tu: destí l'infern amb parada prèvia a la presó.",
-    "Su Florentineza queda com un aprenent al teu costat."
+    "Una ment tan malalta nomes es pot netejar amb una bona karcher.",
+    "Davant d'aquesta confessio, recomanem atencio psiquiatrica urgent."
   ];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
@@ -112,17 +109,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   function onCanviJoc() {
     actualitzarTemaPerJoc();
     actualitzarBloqueigFormulari();
-    const jocId = document.getElementById('joc-select').value;
-    const joc = jocsDisponibles.find(j => j.id === jocId);
-    if (String(joc?.nom || '').trim().toLowerCase() === 'finde rural 2026') {
-      if (localStorage.getItem(LS_HIDE_FINDE_MODAL) === '1') return;
-      document.getElementById('finde-modal')?.classList.add('obert');
-    }
   }
 
   function actualitzarBloqueigFormulari() {
-    const jocId = document.getElementById('joc-select').value;
-    const actiu = !!jocId;
+    const actiu = !!jocActiu;
     ['pregunta','r1','r2','r3','r4'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.disabled = !actiu;
@@ -134,30 +124,46 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 
   function carregarJocs() {
     const select = document.getElementById('joc-select');
+    const jocActiuLabel = document.getElementById('joc-actiu-label');
     onSnapshot(query(collection(db, 'jocs'), where('actiu', '==', true)), snap => {
       jocsDisponibles = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => String(a.nom || '').localeCompare(String(b.nom || ''), 'ca'));
-      select.innerHTML = '<option value="">Selecciona un joc</option>' +
-        jocsDisponibles.map(j => `<option value="${j.id}">${esc(j.nom || j.id)}</option>`).join('');
+      jocActiu = jocsDisponibles[0] || null;
+      if (jocActiu) {
+        select.innerHTML = `<option value="${jocActiu.id}">${esc(jocActiu.nom || jocActiu.id)}</option>`;
+        select.value = jocActiu.id;
+        if (jocActiuLabel) jocActiuLabel.textContent = jocActiu.nom || jocActiu.id;
+      } else {
+        select.innerHTML = '<option value="">No hi ha joc actiu</option>';
+        if (jocActiuLabel) jocActiuLabel.textContent = 'No hi ha cap joc actiu';
+      }
       actualitzarTemaPerJoc();
       actualitzarBloqueigFormulari();
+      obrirPopupInformatiuSiCal();
     }, () => {
       select.innerHTML = '<option value="">No s\'han pogut carregar els jocs</option>';
+      if (jocActiuLabel) jocActiuLabel.textContent = 'No s\'ha pogut carregar el joc actiu';
       actualitzarBloqueigFormulari();
     });
   }
 
+  function obrirPopupInformatiuSiCal() {
+    if (!jocActiu) return;
+    const esFinde = String(jocActiu.nom || '').trim().toLowerCase() === 'finde rural 2026';
+    if (!esFinde) return;
+    if (localStorage.getItem(LS_HIDE_FINDE_MODAL) === '1') return;
+    document.getElementById('finde-modal')?.classList.add('obert');
+  }
+
   function actualitzarTemaPerJoc() {
-    const jocId = document.getElementById('joc-select').value;
-    const joc = jocsDisponibles.find(j => j.id === jocId);
-    const nom = String(joc?.nom || '').trim().toLowerCase();
+    const nom = String(jocActiu?.nom || '').trim().toLowerCase();
     document.body.classList.toggle('theme-finde', nom === 'finde rural 2026');
   }
 
   window.enviarPregunta = async function() {
     const autor    = document.getElementById('autor').value.trim();
     const pregunta = document.getElementById('pregunta').value.trim();
-    const jocId = document.getElementById('joc-select').value;
+    const jocId = jocActiu?.id || '';
     const respostes = [
       document.getElementById('r1').value.trim(),
       document.getElementById('r2').value.trim(),
@@ -166,7 +172,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     ];
     const correcta = document.querySelector('input[name="correcta"]:checked')?.value;
 
-    const joc = jocsDisponibles.find(j => j.id === jocId);
+    const joc = jocActiu;
 
     if (!autor || !pregunta || !jocId || respostes.some(r => !r) || correcta === undefined) {
       mostrarError('Omple tots els camps i marca la resposta correcta.');
@@ -199,7 +205,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       console.error(e);
       mostrarError('Error en enviar. Torna-ho a provar.');
       btn.disabled = false;
-      btn.textContent = 'Enviar pregunta';
+      btn.textContent = 'Envia pregunta →';
     }
   };
 
@@ -211,9 +217,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('form').reset();
     document.getElementById('autor').value = autor;
     document.getElementById('btn-enviar').disabled = false;
-    document.getElementById('btn-enviar').textContent = 'Enviar pregunta →';
+    document.getElementById('btn-enviar').textContent = 'Envia pregunta →';
     document.getElementById('error-msg').style.display = 'none';
-    document.getElementById('joc-select').value = '';
+    if (jocActiu) document.getElementById('joc-select').value = jocActiu.id;
     actualitzarTemaPerJoc();
     actualitzarBloqueigFormulari();
     renderSelectorNoms();
@@ -226,9 +232,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   };
 
   window.obrirElJoc = function() {
-    const jocId = document.getElementById('joc-select').value;
+    const jocId = jocActiu?.id || '';
     if (!jocId) {
-      mostrarError('Selecciona primer el joc.');
+      mostrarError('Ara mateix no hi ha cap joc actiu.');
       return;
     }
     document.getElementById('joc-area').style.display = 'block';
@@ -258,7 +264,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 
   function iniciarLobbyJoc() {
     aturarLobbyJoc();
-    const jocId = document.getElementById('joc-select').value;
+    const jocId = jocActiu?.id || '';
     if (!jocId) return;
 
     const btnConnectar = document.getElementById('btn-connectar-joc');

@@ -51,10 +51,9 @@ if ('serviceWorker' in navigator) {
         </div>
 
         <div class="field">
-          <label for="joc-select">Joc</label>
-          <select id="joc-select" required>
-            <option value="">Carregant jocs...</option>
-          </select>
+          <label>Joc actiu</label>
+          <div id="joc-actiu-label" class="joc-actiu-label">Carregant joc actiu...</div>
+          <select id="joc-select" required style="display:none"></select>
         </div>
 
         <div class="field">
@@ -107,8 +106,8 @@ if ('serviceWorker' in navigator) {
         <hr class="divider">
 
         <div id="error-msg"></div>
-        <button type="submit" id="btn-enviar" disabled>Enviar pregunta →</button>
-        <button type="button" id="btn-el-joc" class="btn-secondary" onclick="obrirElJoc()">El joc</button>
+        <button type="submit" id="btn-enviar" disabled>Envia pregunta →</button>
+        <button type="button" id="btn-el-joc" class="btn-secondary" onclick="obrirElJoc()">El Joc</button>
 
       </form>
     </div>
@@ -139,7 +138,6 @@ if ('serviceWorker' in navigator) {
     </div>
     <div id="joc-connectat" style="display:none">
       <p class="joc-not-started" id="joc-connectat-status">Connectat al joc. Esperant inici.</p>
-      <button type="button" class="btn-secondary" onclick="tancarElJoc()">Tornar enrere</button>
     </div>
     <div id="joc-play" style="display:none">
       <div class="main-header-inline">
@@ -182,8 +180,10 @@ if ('serviceWorker' in navigator) {
 
 <div id="finde-modal" class="finde-modal" onclick="if(event.target===this) tancarFindeModal()">
   <div class="finde-modal-card">
-    <h3>Finde Rural 2026</h3>
-    <p>Envia entre 2 i 3 preguntes. Han de servir per coneixer millor les teves interioritats i secrets mes escabrosos. No tinguis vergonya, estem en confiança: el que passa i es diu al Finde Rural, es queda al Finde Rural.</p>
+    <h3>Informació important</h3>
+    <p>Envia entre 2 i 6 preguntes amb el botó Envia pregunta. Han de servir per conèixer millor les teves interioritats i secrets més escabrosos. No tinguis vergonya, estem en confiança: el que passa i es diu al Finde Rural, es queda al Finde Rural.</p>
+    <p>Veuràs que a sota també hi ha el botó El joc. Aquest et permetrà jugar el dia del concurs.</p>
+    <p>Instal·lar App:<br>- Android, et sortirà el missatge i automàticament se t'instal·larà.<br>- iPhone, a Safari, toca el botó de compartir i tria Afegir a pantalla d'inici.</p>
     <label class="finde-check">
       <input type="checkbox" id="finde-no-more">
       <span>No tornar a mostrar aquest missatge</span>

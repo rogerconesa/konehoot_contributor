@@ -460,10 +460,10 @@ input[type="radio"]:hover { border-color: var(--text); }
 #btn-el-joc {
   margin-top: 10px;
   width: 100%;
-  background: linear-gradient(90deg, #ffd447, #ff7c4d);
-  color: #251404;
-  border-color: rgba(255,212,71,0.85);
-  box-shadow: 0 10px 22px rgba(255,124,77,0.28);
+  background: linear-gradient(90deg, #ff4d5a, #ff7b4d);
+  color: #fff7f7;
+  border-color: rgba(255,77,90,0.9);
+  box-shadow: 0 10px 22px rgba(255,77,90,0.34);
 }
 
 #btn-el-joc:hover {
@@ -502,6 +502,17 @@ input[type="radio"]:hover { border-color: var(--text); }
 .joc-not-started {
   font-size: 15px;
   color: var(--muted);
+}
+
+.joc-actiu-label {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 14px;
+  padding: 12px 14px;
 }
 
 .joc-cloud {
