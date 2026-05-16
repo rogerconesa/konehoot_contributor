@@ -143,7 +143,33 @@ if ('serviceWorker' in navigator) {
         <h2>Joc en curs</h2>
         <button type="button" class="btn-secondary" onclick="sortirModeJocInline()">Sortir</button>
       </div>
-      <iframe id="joc-inline-frame" class="joc-inline-frame" title="Joc mobil"></iframe>
+      <div class="cg-screen" id="cg-screen-espera" style="display:block">
+        <p class="joc-not-started">Esperant pregunta...</p>
+      </div>
+      <div class="cg-screen" id="cg-screen-pregunta" style="display:none">
+        <div class="cg-topbar">
+          <div id="cg-num">1 / 10</div>
+          <div id="cg-autor"></div>
+        </div>
+        <div class="cg-timer-wrap">
+          <div id="cg-timer-num">20</div>
+          <div class="cg-timer-track"><div id="cg-timer-fill"></div></div>
+        </div>
+        <div class="cg-question" id="cg-question"></div>
+        <div class="cg-grid">
+          <button class="cg-btn" id="cg-r0" onclick="respondreContributor(0)"></button>
+          <button class="cg-btn" id="cg-r1" onclick="respondreContributor(1)"></button>
+          <button class="cg-btn" id="cg-r2" onclick="respondreContributor(2)"></button>
+          <button class="cg-btn" id="cg-r3" onclick="respondreContributor(3)"></button>
+        </div>
+      </div>
+      <div class="cg-screen" id="cg-screen-resultats" style="display:none">
+        <p class="joc-not-started" id="cg-result-text"></p>
+      </div>
+      <div class="cg-screen" id="cg-screen-final" style="display:none">
+        <p class="joc-not-started">Joc finalitzat!</p>
+        <p class="joc-not-started" id="cg-final-punts"></p>
+      </div>
     </div>
   </div>
 

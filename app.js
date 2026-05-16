@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDuHxOAU3hiL-8uUYuFyzP-mTyUCTR-wmw",
@@ -22,7 +22,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   let approvedNoms = [];
   let jugadorsNoms = [];
   let connectatAlJoc = false;
-  const JOC_MOBIL_URL = 'https://konehootjocmobil.rogerconesa.workers.dev/';
+  let jocPreguntes = [];
+  let timerInterval = null;
+  let tempsInici = 0;
+  let tempsRestant = 0;
+  let haRespost = false;
+  let jugadorDocIdActiu = '';
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
@@ -267,6 +272,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 
     unsubApproved = onSnapshot(query(collection(db, 'preguntes'), where('jocId', '==', jocId)), snap => {
       approvedNoms = snap.docs.map(d => d.data().autor).filter(Boolean);
+      jocPreguntes = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
       renderCloud();
     });
 
@@ -318,14 +324,19 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     if (partida.fase === 'pregunta') {
       el.textContent = 'La partida ha començat.';
       obrirModeJocInline(jocId);
+      renderPreguntaContributor();
       return;
     }
     if (partida.fase === 'resultats') {
       el.textContent = 'Resultats en curs. Espera la següent pregunta.';
+      obrirModeJocInline(jocId);
+      mostrarResultatsContributor();
       return;
     }
     if (partida.fase === 'final') {
       el.textContent = 'Partida finalitzada.';
+      obrirModeJocInline(jocId);
+      mostrarFinalContributor();
     }
   }
 
@@ -348,6 +359,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       return;
     }
     const jugadorId = normalitzarJugadorId(nom);
+    jugadorDocIdActiu = jugadorId;
     try {
       await setDoc(doc(db, 'partida', 'estat', 'jugadors', jugadorId), {
         nom,
@@ -389,12 +401,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function obrirModeJocInline(jocId) {
-    const nom = document.getElementById('autor').value.trim();
-    const frame = document.getElementById('joc-inline-frame');
-    if (!frame) return;
-    const url = `${JOC_MOBIL_URL}?nom=${encodeURIComponent(nom)}&jocId=${encodeURIComponent(jocId)}&embedded=1`;
-    if (frame.src !== url) frame.src = url;
+  function obrirModeJocInline() {
     document.getElementById('joc-connectat').style.display = 'none';
     document.getElementById('joc-lobby').style.display = 'none';
     document.getElementById('joc-play').style.display = 'block';
@@ -403,4 +410,112 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   window.sortirModeJocInline = function() {
     document.getElementById('joc-play').style.display = 'none';
     document.getElementById('joc-connectat').style.display = 'block';
+    clearInterval(timerInterval);
   };
+
+  function showCgScreen(id) {
+    ['cg-screen-espera','cg-screen-pregunta','cg-screen-resultats','cg-screen-final'].forEach(x => {
+      const el = document.getElementById(x);
+      if (el) el.style.display = x === id ? 'block' : 'none';
+    });
+  }
+
+  function renderPreguntaContributor() {
+    const idx = partida.preguntaIndex ?? 0;
+    const p = jocPreguntes[idx];
+    if (!p) return;
+    haRespost = false;
+    tempsInici = Date.now();
+    showCgScreen('cg-screen-pregunta');
+    document.getElementById('cg-num').textContent = `${idx + 1} / ${jocPreguntes.length}`;
+    document.getElementById('cg-autor').textContent = `De: ${p.autor || ''}`;
+    document.getElementById('cg-question').textContent = p.pregunta || '';
+    p.respostes.forEach((r, i) => {
+      const btn = document.getElementById(`cg-r${i}`);
+      if (btn) {
+        btn.textContent = `${'ABCD'[i]}. ${r}`;
+        btn.disabled = false;
+        btn.classList.remove('sel');
+      }
+    });
+    tempsRestant = partida.tempsPregunta || 20;
+    renderTimerCg();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      tempsRestant--;
+      renderTimerCg();
+      if (tempsRestant <= 0) {
+        clearInterval(timerInterval);
+        if (!haRespost) {
+          document.querySelectorAll('.cg-btn').forEach(b => b.disabled = true);
+          updateDoc(doc(db, 'partida', 'estat'), { fase: 'resultats' }).catch(() => {});
+        }
+      }
+    }, 1000);
+  }
+
+  function renderTimerCg() {
+    const total = partida.tempsPregunta || 20;
+    document.getElementById('cg-timer-num').textContent = String(tempsRestant);
+    document.getElementById('cg-timer-fill').style.width = `${Math.max(0, tempsRestant) / total * 100}%`;
+  }
+
+  window.respondreContributor = async function(idx) {
+    if (haRespost) return;
+    haRespost = true;
+    clearInterval(timerInterval);
+    const q = jocPreguntes[partida.preguntaIndex ?? 0];
+    const total = partida.tempsPregunta || 20;
+    const used = (Date.now() - tempsInici) / 1000;
+    const rap = Math.max(0, total - used);
+    const punts = Math.round((partida.puntsBase || 1000) + (rap / total) * (partida.puntsRapidesa || 500));
+    const guanyats = q && idx === q.correcta ? punts : 0;
+    document.querySelectorAll('.cg-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i === idx) b.classList.add('sel');
+    });
+    try {
+      await setDoc(doc(db, 'partida', 'estat', 'respostes', jugadorDocIdActiu), {
+        nom: document.getElementById('autor').value.trim(),
+        resposta: idx,
+        punts: guanyats,
+        timestamp: serverTimestamp()
+      });
+      if (guanyats > 0) {
+        await setDoc(doc(db, 'partida', 'estat', 'jugadors', jugadorDocIdActiu), {
+          nom: document.getElementById('autor').value.trim(),
+          punts: increment(guanyats)
+        }, { merge: true });
+      }
+      updateDoc(doc(db, 'partida', 'estat'), { fase: 'resultats' }).catch(() => {});
+    } catch (_) {}
+  };
+
+  async function mostrarResultatsContributor() {
+    showCgScreen('cg-screen-resultats');
+    const q = jocPreguntes[partida.preguntaIndex ?? 0];
+    if (!q) return;
+    try {
+      const rd = await getDoc(doc(db, 'partida', 'estat', 'respostes', jugadorDocIdActiu));
+      if (!rd.exists()) {
+        document.getElementById('cg-result-text').textContent = 'No has respost a temps.';
+        return;
+      }
+      const d = rd.data();
+      const ok = d.resposta === q.correcta;
+      document.getElementById('cg-result-text').textContent = ok ? `Correcte! +${d.punts || 0} punts` : `Incorrecte. Resposta correcta: ${q.respostes[q.correcta]}`;
+    } catch (_) {
+      document.getElementById('cg-result-text').textContent = 'Resultats no disponibles.';
+    }
+  }
+
+  async function mostrarFinalContributor() {
+    showCgScreen('cg-screen-final');
+    try {
+      const jd = await getDoc(doc(db, 'partida', 'estat', 'jugadors', jugadorDocIdActiu));
+      const pts = jd.exists() ? (jd.data().punts || 0) : 0;
+      document.getElementById('cg-final-punts').textContent = `Puntuacio final: ${pts}`;
+    } catch (_) {
+      document.getElementById('cg-final-punts').textContent = 'Puntuacio final no disponible';
+    }
+  }
