@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDuHxOAU3hiL-8uUYuFyzP-mTyUCTR-wmw",
@@ -13,6 +13,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
   let jocsDisponibles = [];
+  let partida = {};
+  let unsubPartida = null;
+  let unsubPending = null;
+  let unsubApproved = null;
+  let unsubJugadors = null;
+  let pendingNoms = [];
+  let approvedNoms = [];
+  let jugadorsNoms = [];
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
@@ -199,15 +207,122 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   };
 
   window.obrirElJoc = function() {
+    const jocId = document.getElementById('joc-select').value;
+    if (!jocId) {
+      mostrarError('Selecciona primer el joc.');
+      return;
+    }
     document.getElementById('joc-area').style.display = 'block';
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('success-area').style.display = 'none';
+    iniciarLobbyJoc();
   };
 
   window.tancarElJoc = function() {
     document.getElementById('joc-area').style.display = 'none';
     document.getElementById('form-area').style.display = 'block';
+    aturarLobbyJoc();
   };
+
+  function normalitzarJugadorId(rawNom) {
+    const base = String(rawNom || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[.#$\[\]/]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_-]/g, '');
+    return base || ('jugador_' + Math.random().toString(36).slice(2, 10));
+  }
+
+  function iniciarLobbyJoc() {
+    aturarLobbyJoc();
+    const jocId = document.getElementById('joc-select').value;
+    if (!jocId) return;
+
+    const btnConnectar = document.getElementById('btn-connectar-joc');
+    if (btnConnectar) {
+      btnConnectar.onclick = () => connectarAlJoc(jocId);
+    }
+
+    unsubPartida = onSnapshot(doc(db, 'partida', 'estat'), snap => {
+      partida = snap.exists() ? snap.data() : {};
+      renderStatusJoc(jocId);
+    });
+
+    unsubPending = onSnapshot(query(collection(db, 'preguntes_pendents'), where('jocId', '==', jocId)), snap => {
+      pendingNoms = snap.docs.map(d => d.data().autor).filter(Boolean);
+      renderCloud();
+    });
+
+    unsubApproved = onSnapshot(query(collection(db, 'preguntes'), where('jocId', '==', jocId)), snap => {
+      approvedNoms = snap.docs.map(d => d.data().autor).filter(Boolean);
+      renderCloud();
+    });
+
+    unsubJugadors = onSnapshot(query(collection(db, 'partida', 'estat', 'jugadors'), where('jocId', '==', jocId)), snap => {
+      jugadorsNoms = snap.docs.map(d => d.data().nom).filter(Boolean);
+      renderCloud();
+    });
+  }
+
+  function aturarLobbyJoc() {
+    if (unsubPartida) unsubPartida();
+    if (unsubPending) unsubPending();
+    if (unsubApproved) unsubApproved();
+    if (unsubJugadors) unsubJugadors();
+    unsubPartida = unsubPending = unsubApproved = unsubJugadors = null;
+    pendingNoms = [];
+    approvedNoms = [];
+    jugadorsNoms = [];
+  }
+
+  function renderStatusJoc(jocId) {
+    const el = document.getElementById('joc-status');
+    if (!el) return;
+    if (!partida?.fase || partida.fase === 'espera') {
+      el.textContent = 'El Joc encara no ha començat.';
+      return;
+    }
+    if (partida.jocId && partida.jocId !== jocId) {
+      el.textContent = 'Ara mateix s\'esta jugant un altre joc.';
+      return;
+    }
+    if (partida.fase === 'pregunta') el.textContent = 'El Joc ha començat! Torna a la pantalla principal de joc per respondre.';
+    else if (partida.fase === 'resultats') el.textContent = 'Resultats en curs.';
+    else if (partida.fase === 'final') el.textContent = 'El Joc ha finalitzat.';
+  }
+
+  function renderCloud() {
+    const el = document.getElementById('joc-cloud');
+    if (!el) return;
+    const nomActual = document.getElementById('autor').value.trim();
+    const noms = [...new Set([...pendingNoms, ...approvedNoms, ...jugadorsNoms])].sort((a, b) => a.localeCompare(b, 'ca'));
+    if (!noms.length) {
+      el.innerHTML = '<span class="joc-not-started">Encara no hi ha participants en aquest joc.</span>';
+      return;
+    }
+    el.innerHTML = noms.map(n => `<span class="joc-chip ${n === nomActual ? 'me' : ''}">${esc(n)}</span>`).join('');
+  }
+
+  async function connectarAlJoc(jocId) {
+    const nom = document.getElementById('autor').value.trim();
+    if (!nom) {
+      mostrarError('Escriu el teu nom abans de connectar al joc.');
+      return;
+    }
+    const jugadorId = normalitzarJugadorId(nom);
+    try {
+      await setDoc(doc(db, 'partida', 'estat', 'jugadors', jugadorId), {
+        nom,
+        jocId,
+        connectatAt: serverTimestamp(),
+        punts: 0
+      }, { merge: true });
+      renderCloud();
+    } catch (e) {
+      mostrarError('No s\'ha pogut connectar al joc. Torna-ho a provar.');
+    }
+  }
 
   function mostrarError(msg) {
     const el = document.getElementById('error-msg');

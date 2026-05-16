@@ -504,6 +504,43 @@ input[type="radio"]:hover { border-color: var(--text); }
   color: var(--muted);
 }
 
+.joc-cloud {
+  margin-top: 14px;
+  min-height: 90px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+.joc-chip {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.joc-chip.me {
+  background: rgba(232,245,58,0.2);
+  border-color: rgba(232,245,58,0.5);
+  color: #fff;
+}
+
+#btn-connectar-joc {
+  margin-top: 14px;
+  width: 100%;
+  background: linear-gradient(90deg, #3ac8ff, #3affa0);
+  color: #10222e;
+  border-color: rgba(58,200,255,0.8);
+}
+
 #btn-enviar:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(232,245,58,0.25);
