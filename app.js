@@ -30,11 +30,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   let jugadorDocIdActiu = '';
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
-    "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
-    "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS.",
+    "Davant la gravetat de la informacio aportada, s'activa automàticament una notificació electrònica a @policia.",
+    "Alerta d'informació sensible rebuda: enviament automàtic a la comissió de drets humans del DMS.",
     "Recomanem resar tres pares nostres durant les properes sis nits de lluna plena.",
-    "Una ment tan malalta nomes es pot netejar amb una bona karcher.",
-    "Davant d'aquesta confessio, recomanem atencio psiquiatrica urgent."
+    "Una ment tan malalta requereix un procés immediat de lobotomització.",
+    "Davant d'aquesta confessio, recomanem atenció psiquiàtrica urgent."
+    "Detectada necessitat urgent de trucar al telèfon de l'esperança."
+    "Un tractament a base de fentanil indica que és el més adequat per oblidar un fet tan traumàtic."
   ];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
