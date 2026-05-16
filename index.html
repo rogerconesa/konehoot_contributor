@@ -118,7 +118,10 @@ if ('serviceWorker' in navigator) {
       <div class="success-icon">✓</div>
       <div class="success-title">Pregunta enviada!</div>
       <p class="success-text">Gràcies, <strong id="success-nom"></strong>! La teva pregunta ja és a mans de l'admin. Si la valida, apareixerà al joc. 🎉</p>
-      <p class="success-text" id="success-extra-msg"></p>
+      <div class="success-alert" id="success-alert" role="status" aria-live="polite" style="display:none">
+        <div class="success-alert-icon">⚠</div>
+        <p id="success-extra-msg"></p>
+      </div>
       <button id="btn-nova" onclick="novaContribucio()">Enviar una altra pregunta</button>
     </div>
 
@@ -149,7 +152,7 @@ if ('serviceWorker' in navigator) {
       <div class="cg-screen" id="cg-screen-pregunta" style="display:none">
         <div class="cg-topbar">
           <div id="cg-num">1 / 10</div>
-          <div id="cg-autor"></div>
+          <div id="cg-autor" class="cg-autor-pill"></div>
         </div>
         <div class="cg-timer-wrap">
           <div id="cg-timer-num">20</div>

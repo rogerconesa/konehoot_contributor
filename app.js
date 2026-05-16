@@ -31,7 +31,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
-    "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS."
+    "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS.",
+    "Recomanem resar tres pares nostres durant les properes sis nits de lluna plena.",
+    "Una ment tan malalta nomes es pot netejar amb una bona karcher.",
+    "Davant d'aquesta confessio, recomanem atencio psiquiatrica urgent."
   ];
 
   // ── Memòria de noms (localStorage) ───────────────────────────────────
@@ -389,9 +392,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   function mostrarSuccess(autor) {
     document.getElementById('success-nom').textContent = autor;
     const extraMsgEl = document.getElementById('success-extra-msg');
+    const alertEl = document.getElementById('success-alert');
     if (extraMsgEl) {
       const idx = Math.floor(Math.random() * MISSATGES_EXTRA.length);
       extraMsgEl.textContent = MISSATGES_EXTRA[idx];
+    }
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.classList.remove('pop');
+      void alertEl.offsetWidth;
+      alertEl.classList.add('pop');
     }
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('success-area').style.display = 'flex';
@@ -428,14 +438,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     tempsInici = Date.now();
     showCgScreen('cg-screen-pregunta');
     document.getElementById('cg-num').textContent = `${idx + 1} / ${jocPreguntes.length}`;
-    document.getElementById('cg-autor').textContent = `De: ${p.autor || ''}`;
+    document.getElementById('cg-autor').textContent = `Autor: ${p.autor || ''}`;
     document.getElementById('cg-question').textContent = p.pregunta || '';
     p.respostes.forEach((r, i) => {
       const btn = document.getElementById(`cg-r${i}`);
       if (btn) {
-        btn.textContent = `${'ABCD'[i]}. ${r}`;
+        btn.textContent = `${'ABCD'[i]}`;
         btn.disabled = false;
         btn.classList.remove('sel');
+        btn.classList.remove('pop-in');
+        void btn.offsetWidth;
+        btn.classList.add('pop-in');
       }
     });
     tempsRestant = partida.tempsPregunta || 20;
