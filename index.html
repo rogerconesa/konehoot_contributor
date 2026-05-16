@@ -129,9 +129,15 @@ if ('serviceWorker' in navigator) {
       <h2>El joc</h2>
       <button type="button" class="btn-secondary" onclick="tancarElJoc()">Tornar</button>
     </div>
-    <p class="joc-not-started" id="joc-status">El Joc encara no ha començat.</p>
-    <div class="joc-cloud" id="joc-cloud"></div>
-    <button type="button" id="btn-connectar-joc" class="btn-secondary">Connectar al Joc</button>
+    <div id="joc-lobby">
+      <p class="joc-not-started" id="joc-status">El Joc encara no ha començat.</p>
+      <div class="joc-cloud" id="joc-cloud"></div>
+      <button type="button" id="btn-connectar-joc" class="btn-secondary">Connectar al Joc</button>
+    </div>
+    <div id="joc-connectat" style="display:none">
+      <p class="joc-not-started" id="joc-connectat-status">Connectat al joc. Esperant inici.</p>
+      <button type="button" class="btn-secondary" onclick="tancarElJoc()">Tornar enrere</button>
+    </div>
   </div>
 
   <p class="footer">Les respostes són confidencials fins al dia del joc.</p>

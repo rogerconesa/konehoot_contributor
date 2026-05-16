@@ -21,6 +21,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   let pendingNoms = [];
   let approvedNoms = [];
   let jugadorsNoms = [];
+  let connectatAlJoc = false;
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
@@ -174,6 +175,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
         estat: 'pending',
         createdAt: serverTimestamp()
       });
+      const usuariId = normalitzarJugadorId(autor);
+      await setDoc(doc(db, 'usuaris', usuariId), {
+        nom: autor,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
       desarNom(autor);
       mostrarSuccess(autor);
     } catch (e) {
@@ -213,6 +219,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       return;
     }
     document.getElementById('joc-area').style.display = 'block';
+    document.getElementById('joc-connectat').style.display = 'none';
+    document.getElementById('joc-lobby').style.display = 'block';
     document.getElementById('form-area').style.display = 'none';
     document.getElementById('success-area').style.display = 'none';
     iniciarLobbyJoc();
@@ -222,6 +230,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('joc-area').style.display = 'none';
     document.getElementById('form-area').style.display = 'block';
     aturarLobbyJoc();
+    connectatAlJoc = false;
   };
 
   function normalitzarJugadorId(rawNom) {
@@ -247,6 +256,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     unsubPartida = onSnapshot(doc(db, 'partida', 'estat'), snap => {
       partida = snap.exists() ? snap.data() : {};
       renderStatusJoc(jocId);
+      renderStatusConnectat(jocId);
     });
 
     unsubPending = onSnapshot(query(collection(db, 'preguntes_pendents'), where('jocId', '==', jocId)), snap => {
@@ -292,6 +302,31 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     else if (partida.fase === 'final') el.textContent = 'El Joc ha finalitzat.';
   }
 
+  function renderStatusConnectat(jocId) {
+    if (!connectatAlJoc) return;
+    const el = document.getElementById('joc-connectat-status');
+    if (!el) return;
+    if (!partida?.fase || partida.fase === 'espera') {
+      el.textContent = 'Connectat al joc. Esperant que l\'admin inicii la partida.';
+      return;
+    }
+    if (partida.jocId && partida.jocId !== jocId) {
+      el.textContent = 'Ara mateix s\'esta jugant un altre joc. Pots tornar enrere i esperar.';
+      return;
+    }
+    if (partida.fase === 'pregunta') {
+      el.textContent = 'La partida ha començat. En breu es mostraran preguntes en aquesta app.';
+      return;
+    }
+    if (partida.fase === 'resultats') {
+      el.textContent = 'Resultats en curs. Espera la següent pregunta.';
+      return;
+    }
+    if (partida.fase === 'final') {
+      el.textContent = 'Partida finalitzada.';
+    }
+  }
+
   function renderCloud() {
     const el = document.getElementById('joc-cloud');
     if (!el) return;
@@ -318,6 +353,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
         connectatAt: serverTimestamp(),
         punts: 0
       }, { merge: true });
+      connectatAlJoc = true;
+      document.getElementById('joc-lobby').style.display = 'none';
+      document.getElementById('joc-connectat').style.display = 'block';
+      renderStatusConnectat(jocId);
       renderCloud();
     } catch (e) {
       mostrarError('No s\'ha pogut connectar al joc. Torna-ho a provar.');
