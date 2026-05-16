@@ -22,6 +22,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   let approvedNoms = [];
   let jugadorsNoms = [];
   let connectatAlJoc = false;
+  const JOC_MOBIL_URL = 'https://konehootjocmobil.rogerconesa.workers.dev/';
   const LS_HIDE_FINDE_MODAL = 'konehoot_hide_finde_modal';
   const MISSATGES_EXTRA = [
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
@@ -315,7 +316,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       return;
     }
     if (partida.fase === 'pregunta') {
-      el.textContent = 'La partida ha començat. En breu es mostraran preguntes en aquesta app.';
+      el.textContent = 'La partida ha començat.';
+      obrirModeJocInline(jocId);
       return;
     }
     if (partida.fase === 'resultats') {
@@ -356,6 +358,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
       connectatAlJoc = true;
       document.getElementById('joc-lobby').style.display = 'none';
       document.getElementById('joc-connectat').style.display = 'block';
+      document.getElementById('joc-play').style.display = 'none';
       renderStatusConnectat(jocId);
       renderCloud();
     } catch (e) {
@@ -385,3 +388,19 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
   function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  function obrirModeJocInline(jocId) {
+    const nom = document.getElementById('autor').value.trim();
+    const frame = document.getElementById('joc-inline-frame');
+    if (!frame) return;
+    const url = `${JOC_MOBIL_URL}?nom=${encodeURIComponent(nom)}&jocId=${encodeURIComponent(jocId)}&embedded=1`;
+    if (frame.src !== url) frame.src = url;
+    document.getElementById('joc-connectat').style.display = 'none';
+    document.getElementById('joc-lobby').style.display = 'none';
+    document.getElementById('joc-play').style.display = 'block';
+  }
+
+  window.sortirModeJocInline = function() {
+    document.getElementById('joc-play').style.display = 'none';
+    document.getElementById('joc-connectat').style.display = 'block';
+  };

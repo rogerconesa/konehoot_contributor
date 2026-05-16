@@ -138,6 +138,13 @@ if ('serviceWorker' in navigator) {
       <p class="joc-not-started" id="joc-connectat-status">Connectat al joc. Esperant inici.</p>
       <button type="button" class="btn-secondary" onclick="tancarElJoc()">Tornar enrere</button>
     </div>
+    <div id="joc-play" style="display:none">
+      <div class="main-header-inline">
+        <h2>Joc en curs</h2>
+        <button type="button" class="btn-secondary" onclick="sortirModeJocInline()">Sortir</button>
+      </div>
+      <iframe id="joc-inline-frame" class="joc-inline-frame" title="Joc mobil"></iframe>
+    </div>
   </div>
 
   <p class="footer">Les respostes són confidencials fins al dia del joc.</p>

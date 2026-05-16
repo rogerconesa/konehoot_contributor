@@ -541,6 +541,14 @@ input[type="radio"]:hover { border-color: var(--text); }
   border-color: rgba(58,200,255,0.8);
 }
 
+.joc-inline-frame {
+  width: 100%;
+  min-height: 64vh;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  background: #0a0a0a;
+}
+
 #btn-enviar:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(232,245,58,0.25);
