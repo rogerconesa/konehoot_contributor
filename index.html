@@ -32,7 +32,6 @@ if ('serviceWorker' in navigator) {
   <!-- Header -->
   <div class="header">
     <div class="konehoot-logo">kone<span>hoot</span></div>
-    <h1>Envia preguntes per al joc.</h1>
   </div>
 
   <!-- Card -->
@@ -109,6 +108,7 @@ if ('serviceWorker' in navigator) {
 
         <div id="error-msg"></div>
         <button type="submit" id="btn-enviar" disabled>Enviar pregunta →</button>
+        <button type="button" id="btn-el-joc" class="btn-secondary" onclick="obrirElJoc()">El joc</button>
 
       </form>
     </div>
@@ -122,6 +122,14 @@ if ('serviceWorker' in navigator) {
       <button id="btn-nova" onclick="novaContribucio()">Enviar una altra pregunta</button>
     </div>
 
+  </div>
+
+  <div class="card" id="joc-area" style="display:none">
+    <div class="main-header-inline">
+      <h2>El joc</h2>
+      <button type="button" class="btn-secondary" onclick="tancarElJoc()">Tornar</button>
+    </div>
+    <p class="joc-not-started">El Joc encara no ha començat.</p>
   </div>
 
   <p class="footer">Les respostes són confidencials fins al dia del joc.</p>

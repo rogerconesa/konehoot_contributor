@@ -198,6 +198,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     document.getElementById('finde-modal')?.classList.remove('obert');
   };
 
+  window.obrirElJoc = function() {
+    document.getElementById('joc-area').style.display = 'block';
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('success-area').style.display = 'none';
+  };
+
+  window.tancarElJoc = function() {
+    document.getElementById('joc-area').style.display = 'none';
+    document.getElementById('form-area').style.display = 'block';
+  };
+
   function mostrarError(msg) {
     const el = document.getElementById('error-msg');
     el.textContent = msg;
