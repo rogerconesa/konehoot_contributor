@@ -34,7 +34,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
     "Davant la gravetat de la informacio aportada, s'activa automaticament una notificacio electronica a @policia.",
     "Alerta d'informacio sensible rebuda: enviament automatic a la comissio de drets humans del DMS.",
     "Recomanem resar tres pares nostres durant les properes sis nits de lluna plena.",
-    "Una ment tan malalta nomes es pot netejar amb una bona karcher.",
+    "Una ment tan malalta només es pot netejar amb una bona dutxa d'aigua freda.",
     "Davant d'aquesta confessio, recomanem atencio psiquiatrica urgent."
   ];
 
